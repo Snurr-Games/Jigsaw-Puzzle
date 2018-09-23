@@ -1,0 +1,15 @@
+{
+  "name": "jigsaw-puzzle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "browser-sync start --server --files './index.html, ./app.js, !node_modules/**/*' --directory --port 7777 --browser \"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\""
+  },
+  "author": "Snurr Games",
+  "license": "MIT",
+  "devDependencies": {
+    "browser-sync": "^2.23.6"
+  }
+}
