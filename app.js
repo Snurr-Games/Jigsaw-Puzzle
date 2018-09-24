@@ -141,23 +141,21 @@ function drawPiece(piece) {
 
   const column  = Math.floor( piece.originalIndex % columns )
   const row     = Math.floor( piece.originalIndex / columns )
+  
+  const sX = Math.floor((img.width  * column - img.width  * .25) / columns)
+  const sY = Math.floor((img.height * row    - img.height * .25) / rows)
+  const sWidth  = Math.floor( img.width  / columns ) * 1.5
+  const sHeight = Math.floor( img.height / rows    ) * 1.5
 
-  const sWidth  = Math.floor( img.width  / columns )
-  const sHeight = Math.floor( img.height / rows    )
+  const dX = Math.floor(x - width * .25)
+  const dY = Math.floor(y - height * .25)
+  const dWidth  = Math.floor(width  * 1.5)
+  const dHeight = Math.floor(height * 1.5)
 
-  const sX = column * ( sWidth  * .8 )
-  const sY = row    * ( sHeight * .8 )
-
-  const dWidth  = width  * 1.4
-  const dHeight = height * 1.4
-
-  const dX = x - dWidth  * .2
-  const dY = y - dHeight * .2
-
-  ctx.drawImage( img, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight )
+  ctx.drawImage(img, sX, sY, sWidth, sHeight, dX, dY, dWidth, dHeight)
 
   ctx.lineWidth = 1
-  ctx.strokeStyle = '#FFFFFF'
+  ctx.strokeStyle = '#999999'
   ctx.stroke()
   ctx.restore()
 }
