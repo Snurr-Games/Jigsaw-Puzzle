@@ -9,7 +9,7 @@ let isSelected = false
 
 const img = new Image()
 
-img.src = 'puzzle-image_01.jpg'
+img.src = 'assets/images/puzzle-image_01.jpg'
 
 function generatePieces() {
   const width  = Math.floor( canvas.width  / columns )
