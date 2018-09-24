@@ -170,8 +170,16 @@ img.onload = () => requestAnimationFrame(draw)
 
 inputs.forEach(input => {
   input.addEventListener('change', e => {
-    if (e.target.name == 'columns') columns = parseInt(e.target.value)
-    if (e.target.name == 'rows')       rows = parseInt(e.target.value)
+    let value = parseInt(e.target.value)
+    const max = parseInt(e.target.max)
+    const min = parseInt(e.target.min)
+
+    if (value > max) value = max
+    if (value < min) value = min
+
+    if (e.target.name == 'columns') columns = value  
+    if (e.target.name == 'rows')    rows    = value
+
     generatePieces()
   })
 })
