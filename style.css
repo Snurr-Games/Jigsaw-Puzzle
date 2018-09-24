@@ -15,7 +15,7 @@ html {
 
 body {
   font-family: 'Roboto', sans-serif;
-  color: #FFFFFF;
+  color: #323232;
 }
 
 a {
@@ -28,9 +28,10 @@ a {
   margin: auto;
   top: 0; bottom: 0;
   left: 0; right: 0;
-  border: 2px solid black;
+  border: 1px solid #999999;
   background: #002E6B;
   box-shadow: 2px 2px 10px #001026;
+  border-radius: 2px;
 }
 
 #options {
@@ -41,11 +42,11 @@ a {
   width: 780px;
   padding: 10px;
   margin: auto;
-  border: 2px solid black;
+  border: 1px solid #999999;
   box-shadow: 2px 2px 10px #222222;
   display: flex;
   justify-content: center;
-  color: #000000;
+  border-radius: 2px;
 }
 
 #options > * {
@@ -55,8 +56,13 @@ a {
 button,
 input {
   background: #EEEEEE;
-  border: 1px solid black;
-  padding: 5px;  
+  border: 1px solid #999999;
+  padding: 5px;
+  border-radius: 2px;
+}
+
+button {
+  cursor: pointer;
 }
 
 #copyright {
