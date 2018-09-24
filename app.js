@@ -180,7 +180,7 @@ shuffleBtn.addEventListener('click', e => {
 })
 
 canvas.addEventListener('mousedown', e => {
-  for (let i = pieces.length - 1; i > 0; i--) {
+  for (let i = pieces.length - 1; i >= 0; i--) {
     if (
       !pieces[i].locked &&
       e.layerX >= pieces[i].currentPosition.x && 
