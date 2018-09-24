@@ -4,7 +4,8 @@ const shuffleBtn = document.querySelector('button[name="shuffle"')
 
 let columns = parseInt( inputs[0].value )
 let rows    = parseInt( inputs[1].value )
-let pieces, selected
+let pieces
+let isSelected = false
 
 const img = new Image()
 
@@ -19,17 +20,18 @@ function generatePieces() {
   for ( let y = 0; y < rows; y++ ) {
     for ( let x = 0; x < columns; x++ ) {
       const piece = {
+        originalIndex: y * columns + x,
         width,
         height,
-        currentPosition:  {x: x * width, y: y * height},
-        originalPosition: {x: x * width, y: y * height},
-        locked: true,
-        sides: {
-          top:    y == 0           ? 0 : undefined,
-          right:  x == columns - 1 ? 0 : undefined,
-          bottom: y == rows - 1    ? 0 : undefined,
-          left:   x == 0           ? 0 : undefined
-        }
+        currentPosition:  [x * width, y * height],
+        originalPosition: [x * width, y * height],
+        isLocked: true,
+        sides: [
+          y == 0           ? 0 : undefined,
+          x == columns - 1 ? 0 : undefined,
+          y == rows - 1    ? 0 : undefined,
+          x == 0           ? 0 : undefined
+        ]
       }
 
       pieces.push(piece)
@@ -42,11 +44,11 @@ function generatePieces() {
       const pieceRight  = pieces[ x < columns - 1  ? y * columns + (x + 1) : undefined ]
       const pieceBottom = pieces[ y < rows - 1     ? (y + 1) * columns + x : undefined ]
 
-      if (piece.sides.right  == undefined) piece.sides.right  = Math.floor( Math.random() * 2 ) ? 1 : -1
-      if (piece.sides.bottom == undefined) piece.sides.bottom = Math.floor( Math.random() * 2 ) ? 1 : -1
+      if (piece.sides[1] == undefined) piece.sides[1] = Math.floor( Math.random() * 2 ) ? 1 : -1
+      if (piece.sides[2] == undefined) piece.sides[2] = Math.floor( Math.random() * 2 ) ? 1 : -1
 
-      if (pieceRight)  pieceRight.sides.left = -piece.sides.right
-      if (pieceBottom) pieceBottom.sides.top = -piece.sides.bottom
+      if (pieceRight)  pieceRight.sides[3]  = -piece.sides[1]
+      if (pieceBottom) pieceBottom.sides[0] = -piece.sides[2]
     }
   }
 
@@ -54,16 +56,16 @@ function generatePieces() {
 
 function shufflePieces() {
   pieces.forEach( piece => {
-    piece.currentPosition.x = Math.floor( Math.random() * ( canvas.width  - piece.width  ) )
-    piece.currentPosition.y = Math.floor( Math.random() * ( canvas.height - piece.height ) )
-    piece.locked = false
+    piece.currentPosition[0] = Math.floor( Math.random() * ( canvas.width  - piece.width  ) )
+    piece.currentPosition[1] = Math.floor( Math.random() * ( canvas.height - piece.height ) )
+    piece.isLocked = false
   } )
 }
 
-function drawPiece(piece, i) {
+function drawPiece(piece) {
   const { width, height } = piece
-  const { x, y } = piece.currentPosition
-  const { top, right, bottom, left } = piece.sides
+  const [ x, y ] = piece.currentPosition
+  const [ top, right, bottom, left ] = piece.sides
 
   ctx.save()
   ctx.beginPath()
@@ -116,8 +118,8 @@ function drawPiece(piece, i) {
   ctx.fill()
   ctx.clip()
 
-  const column  = Math.floor( i % columns )
-  const row     = Math.floor( i / columns )
+  const column  = Math.floor( piece.originalIndex % columns )
+  const row     = Math.floor( piece.originalIndex / columns )
 
   const sWidth  = Math.floor( img.width  / columns )
   const sHeight = Math.floor( img.height / rows    )
@@ -142,9 +144,8 @@ function drawPiece(piece, i) {
 function draw() {
   canvas.width = canvas.width
 
-  pieces.forEach((piece, i) => drawPiece(piece, i) )
-
-  if (selected >= 0) drawPiece( pieces[selected], selected )
+  pieces.filter( piece =>  piece.isLocked).forEach(piece => drawPiece(piece) )
+  pieces.filter( piece => !piece.isLocked).forEach(piece => drawPiece(piece) )
 
   requestAnimationFrame(draw)
 }
@@ -152,14 +153,14 @@ function draw() {
 function checkPieces() {
   pieces.forEach(piece => {
     if (
-      piece.currentPosition.x > piece.originalPosition.x - piece.width  * .2 &&
-      piece.currentPosition.x < piece.originalPosition.x + piece.width  * .2 &&
-      piece.currentPosition.y > piece.originalPosition.y - piece.height * .2 &&
-      piece.currentPosition.y < piece.originalPosition.y + piece.height * .2
+      piece.currentPosition[0] > piece.originalPosition[0] - piece.width  * .2 &&
+      piece.currentPosition[0] < piece.originalPosition[0] + piece.width  * .2 &&
+      piece.currentPosition[1] > piece.originalPosition[1] - piece.height * .2 &&
+      piece.currentPosition[1] < piece.originalPosition[1] + piece.height * .2
     ) {
-      piece.currentPosition.x = piece.originalPosition.x
-      piece.currentPosition.y = piece.originalPosition.y
-      piece.locked = true
+      piece.currentPosition[0] = piece.originalPosition[0]
+      piece.currentPosition[1] = piece.originalPosition[1]
+      piece.isLocked = true
     }
   })
 }
@@ -182,32 +183,32 @@ shuffleBtn.addEventListener('click', e => {
 canvas.addEventListener('mousedown', e => {
   for (let i = pieces.length - 1; i >= 0; i--) {
     if (
-      !pieces[i].locked &&
-      e.layerX >= pieces[i].currentPosition.x && 
-      e.layerX <= pieces[i].currentPosition.x + pieces[i].width && 
-      e.layerY >= pieces[i].currentPosition.y && 
-      e.layerY <= pieces[i].currentPosition.y + pieces[i].height
+      !pieces[i].isLocked &&
+      e.layerX >= pieces[i].currentPosition[0] && 
+      e.layerX <= pieces[i].currentPosition[0] + pieces[i].width && 
+      e.layerY >= pieces[i].currentPosition[1] && 
+      e.layerY <= pieces[i].currentPosition[1] + pieces[i].height
     ) {
-      selected = i
+      isSelected = true
+      pieces.push( pieces.splice(i, 1)[0] )
       break
     }
   }
 })
 
 canvas.addEventListener('mouseup',  e => {
-  selected = undefined
+  isSelected = false
   checkPieces()
 })
 
 canvas.addEventListener('mouseout', e => {
-  selected = undefined
+  isSelected = false
 })
 
 canvas.addEventListener('mousemove', e => {
-
-  if (selected >= 0) {
-    pieces[selected].currentPosition.x = e.layerX - pieces[selected].width  / 2
-    pieces[selected].currentPosition.y = e.layerY - pieces[selected].height / 2
+  if (isSelected) {
+    const piece = pieces[pieces.length -1]
+    piece.currentPosition[0] = e.layerX - piece.width  / 2
+    piece.currentPosition[1] = e.layerY - piece.height / 2
   }
-
-} )
+})
