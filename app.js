@@ -1,6 +1,8 @@
 const ctx        = window.canvas.getContext('2d')
 const inputs     = document.querySelectorAll('input')
 const shuffleBtn = document.querySelector('button[name="shuffle"')
+const customBtn  = document.querySelector('button[name="custom"')
+const fileInput  = document.querySelector('input[name="file"]')
 
 let columns = parseInt( inputs[0].value )
 let rows    = parseInt( inputs[1].value )
@@ -184,8 +186,10 @@ function checkPieces() {
   })
 }
 
-generatePieces()
-img.onload = () => requestAnimationFrame(draw)
+img.onload = () => {
+  generatePieces()
+  requestAnimationFrame(draw)
+}
 
 inputs.forEach(input => {
   input.addEventListener('change', e => {
@@ -205,6 +209,20 @@ inputs.forEach(input => {
 
 shuffleBtn.addEventListener('click', e => {
   shufflePieces()
+})
+
+customBtn.addEventListener('click', e => fileInput.click())
+
+fileInput.addEventListener('change', e => {
+  if (!e.target.files.length || !e.target.accept.includes(e.target.files[0].type)) return
+
+  const fr = new FileReader()
+
+  fr.addEventListener('load', () => {
+    img.src = fr.result
+  })
+
+  fr.readAsDataURL(e.target.files[0])
 })
 
 canvas.addEventListener('mousedown', e => {
