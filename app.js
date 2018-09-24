@@ -6,10 +6,29 @@ let columns = parseInt( inputs[0].value )
 let rows    = parseInt( inputs[1].value )
 let pieces
 let isSelected = false
-
 const img = new Image()
+const sounds = []
+
+function Sound(src) {
+  const sound = {}
+  sound.element = document.createElement('audio')
+  
+  sound.element.src = src
+  sound.element.setAttribute('preload', 'auto')
+  sound.element.setAttribute('controls', 'none')
+  sound.element.style.display = 'none'
+  
+  document.body.appendChild(sound.element);
+  
+  sound.play = () => sound.element.play()
+
+  return sound
+}
 
 img.src = 'assets/images/puzzle-image_01.jpg'
+
+sounds[0] = new Sound('assets/sounds/click_01.mp3')
+sounds[1] = new Sound('assets/sounds/click_02.mp3')
 
 function generatePieces() {
   const width  = Math.floor( canvas.width  / columns )
@@ -199,6 +218,7 @@ canvas.addEventListener('mousedown', e => {
     ) {
       isSelected = true
       pieces.push( pieces.splice(i, 1)[0] )
+      sounds[1].play()
       break
     }
   }
@@ -207,6 +227,7 @@ canvas.addEventListener('mousedown', e => {
 canvas.addEventListener('mouseup',  e => {
   isSelected = false
   checkPieces()
+  pieces[pieces.length - 1].isLocked ? sounds[0].play() : sounds[1].play()
 })
 
 canvas.addEventListener('mouseout', e => {
